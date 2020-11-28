@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 // Controllers
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SiteGlobal\HomeController;
+use App\Http\Controllers\SetupWizard\SetupWizardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,11 @@ use App\Http\Controllers\HomeController;
 */
 
 Route::get('/', [HomeController::class, 'index']);
+
+// setup wizard
+Route::get('/setup-wizard/{step}', [SetupWizardController::class, 'showStep'])->name('setup-wizard');
+Route::patch('/setup-wizard/{step}', [SetupWizardController::class, 'submitStep'])->name('setup-wizard-submit');
+
 
 Route::get('/dev', function () {
     return view('setup_wizard.start');

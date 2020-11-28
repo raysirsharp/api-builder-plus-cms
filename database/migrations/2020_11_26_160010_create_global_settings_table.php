@@ -16,7 +16,7 @@ class CreateGlobalSettingsTable extends Migration
         Schema::create('global_settings', function (Blueprint $table) {
             $table->id();
             $table->boolean('setup_complete')->default(false);
-            $table->integer('setup_progress')->default(0);
+            $table->integer('setup_progress')->default(1);
 
             // users
             $table->boolean('has_users')->default(false);
@@ -29,7 +29,7 @@ class CreateGlobalSettingsTable extends Migration
 
             // providers
             $table->enum('file_storage_type', ['local', 'ftp', 'sftp', 's3'])->default('local');
-            $table->enum('email_provider_type', ['smtp', 'mailgun', 'postmark', 'ses', 'sendmail'])->default('local');
+            $table->enum('email_provider_type', ['smtp', 'mailgun', 'postmark', 'ses', 'sendmail'])->default('smtp');
 
             $table->timestamps();
         });

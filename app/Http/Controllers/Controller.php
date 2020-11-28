@@ -14,38 +14,55 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
-     * Output an API response in JSON.
+     * Toggle if this is an API controller or not.
      *
-     * @param array $output
-     * @param int $status_code
-     * @return Response
+     * @var boolean
      */
-    protected function apiResponse($output, $status_code = 200)
-    {
-        if (is_a($output, 'Illuminate\Http\Resources\Json\ResourceCollection')) {
-            return $output;
-        }
+    const IS_API = false;
 
-        return Response::json($output, $status_code);
+    /**
+     * A list of Service class names that this controller will connect to.
+     *
+     * @var array
+     */
+    protected $service_classes = [];
+
+    /**
+     * Instantiated services
+     *
+     * @var array
+     */
+    protected $services = [];
+
+    /**
+     * Instantiate services based on $service_classes variable
+     *
+     * @param Application $app
+     * @return void
+     */
+    function __construct()
+    {
+        //load all repositories for this service
+        foreach ($this->service_classes as $key => $class) {
+            $this->services[$key] = app()->makeWith($class, ['for_api' => static::IS_API]);
+        }
     }
 
     /**
-     * Output an API error response in JSON.
+     * Helper function to interact with service instance
      *
-     * @param mixed $err
-     * @param int $status_code
-     * @return Response
+     * @param string $key service identifier. If null, the first service will be grabbed
+     * @return ServiceClass
      */
-    protected function apiError($err, $status_code = 400)
+    public function service($key = null)
     {
-        if($err instanceof Exception) {
-            $message = $err->getMessage();
+        if (!$key) {
+            $key = array_key_first($this->services);
         }
-        else {
-            $message = $err;
+        if (!isset($this->services[$key])) {
+            throw new Exception('Service key ' . $key . ' not found.');
         }
-
-        return Response::json(['error' => $message], $status_code);
+        return $this->services[$key];
     }
 
     /**
