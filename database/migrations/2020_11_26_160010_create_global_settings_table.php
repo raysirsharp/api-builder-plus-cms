@@ -18,7 +18,10 @@ class CreateGlobalSettingsTable extends Migration
             $table->boolean('setup_complete')->default(false);
             $table->integer('setup_progress')->default(1);
 
-            // users
+            // admin users
+            $table->boolean('primary_admin_configured')->default(false);
+
+            // public users
             $table->boolean('has_users')->default(false);
             $table->boolean('has_registration')->default(false);
             $table->boolean('has_password_resets')->default(false);

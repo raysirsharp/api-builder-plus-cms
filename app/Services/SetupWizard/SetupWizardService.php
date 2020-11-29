@@ -60,6 +60,8 @@ class SetupWizardService extends BaseService
         switch($step_number) {
             case $this->base_step:
                 return 'start';
+            case $this->base_step + 1:
+                return 'primary-user';
             default:
                 abort(404);
         }
@@ -78,6 +80,7 @@ class SetupWizardService extends BaseService
             switch($step_number) {
                 case $this->base_step:
                     return [
+                        'has_data' => true,
                         'database_name' => env('DB_DATABASE'),
                         'database_user_name' => env('DB_USERNAME'),
                         'database_password' => env('DB_PASSWORD'),
@@ -86,7 +89,7 @@ class SetupWizardService extends BaseService
                     abort(404);
             }
         }
-        catch(Exception $e) { return []; }
+        catch(Exception $e) { return ['has_data' => false]; }
     }
 
     /**
@@ -121,6 +124,9 @@ class SetupWizardService extends BaseService
         try {
             Artisan::call('cache:clear');
             Artisan::call('migrate:fresh');
+
+            $settings = new GlobalSettings(['setup_progress' => 2]);
+            $settings->save();
         }
         catch(Exception $e) {
             throw new Exception('We failed to connect to MYSQL, please check your credentials and make sure MYSQL is running and try again.');

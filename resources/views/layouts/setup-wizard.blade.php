@@ -26,7 +26,14 @@
 	</header>
 	@include('partials.messages')
 	<main>
-	    @yield('content')
+        <div class="px-md-5 px-3 py-5">
+            <div class="jumbotron">
+                @yield('step-title')
+                <div class="text-center col-md-8 offset-md-2">
+                    @yield('content')
+                </div>
+            </div>
+        </div>
 	</main>
 	<footer>
 	    @include('partials.footer')

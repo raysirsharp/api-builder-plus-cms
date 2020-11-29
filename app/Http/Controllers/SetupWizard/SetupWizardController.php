@@ -45,7 +45,7 @@ class SetupWizardController extends Controller
     {
         $data = $this->service()->getConfigurationStepData($step_number);
         $view = $this->service()->getConfigurationStepView($step_number);
-        return view("setup_wizard.{$view}")->with('data', $data);
+        return view("setup_wizard.{$view}")->with(['data' => $data, 'step' => $step_number]);
     }
 
     /**
