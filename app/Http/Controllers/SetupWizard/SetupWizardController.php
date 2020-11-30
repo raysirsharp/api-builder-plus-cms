@@ -60,7 +60,7 @@ class SetupWizardController extends Controller
             $this->service()->submitConfigurationStep($request, $step_number);
             return redirect(route('setup-wizard', $step_number + 1));
         }
-        catch(Exception $e){
+        catch(Exception $e) {
             return $this->htmlError($e);
         }
     }

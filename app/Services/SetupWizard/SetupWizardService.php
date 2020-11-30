@@ -4,6 +4,7 @@ namespace App\Services\SetupWizard;
 
 use App\Services\BaseService;
 use App\Models\GlobalSettings;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\SiteGlobal\FileWriterService;
 use Illuminate\Support\Facades\Artisan;
@@ -75,7 +76,6 @@ class SetupWizardService extends BaseService
      */
     public function getConfigurationStepData($step_number) {
         try {
-            $settings = GlobalSettings::first();
 
             switch($step_number) {
                 case $this->base_step:
@@ -84,6 +84,14 @@ class SetupWizardService extends BaseService
                         'database_name' => env('DB_DATABASE'),
                         'database_user_name' => env('DB_USERNAME'),
                         'database_password' => env('DB_PASSWORD'),
+                    ];
+                case $this->base_step + 1:
+                    $user = User::first();
+
+                    return [
+                        'has_data' => true,
+                        'user_name' => $user->user_name,
+                        'email' => $user->email
                     ];
                 default:
                     abort(404);
@@ -103,6 +111,8 @@ class SetupWizardService extends BaseService
         switch($step_number) {
             case $this->base_step:
                 return $this->databaseInitialize($request);
+            case $this->base_step + 1:
+                return $this->adminInitialize($request);
             default:
                 abort(404);
         }
@@ -125,13 +135,42 @@ class SetupWizardService extends BaseService
             Artisan::call('cache:clear');
             Artisan::call('migrate:fresh');
 
-            $settings = new GlobalSettings(['setup_progress' => 2]);
-            $settings->save();
+            $settings = GlobalSettings::create(['setup_progress' => 2]);
         }
         catch(Exception $e) {
             throw new Exception('We failed to connect to MYSQL, please check your credentials and make sure MYSQL is running and try again.');
         }
 
+    }
+
+    /**
+     * Initialize the primary for Development
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function adminInitialize(Request $request) {
+
+        //validate
+        $request->validate(
+            [
+                'user_name' => 'required|string|min:3|max:20',
+                'email' => 'required|email|max:255',
+                'password' => 'required|string|confirmed|min:6|max:20',
+            ]
+        );
+
+        User::query()->truncate();
+
+        // create user
+        $user_data = [
+            'user_name' => $request->user_name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'is_api_admin' => true,
+            'is_content_admin' => true
+        ];
+        User::create($user_data);
     }
 
 }

@@ -9,5 +9,10 @@ class GlobalSettings extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are protected from being mass assignable.
+     *
+     * @var array
+     */
     protected $guarded = ['id'];
 }

@@ -47,9 +47,9 @@
         <div class="form-group">
             <label><i class="fas fa-user-lock"></i> Password Confirmation</label>
             <div class="input-group mb-3">
-                <input type="password" class="form-control" id="password_confirm" name="password_confirm" required />
+                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required />
                 <div class="input-group-append">
-                    <button onclick="showHidePasswordField(this, 'password_confirm')" class="btn btn-info" type="button">
+                    <button onclick="showHidePasswordField(this, 'password_confirmation')" class="btn btn-info" type="button">
                         <i class="far fa-eye"></i>
                     </button>
                 </div>

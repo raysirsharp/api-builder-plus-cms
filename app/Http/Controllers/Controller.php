@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Validation\ValidationException;
 
 class Controller extends BaseController
 {
@@ -82,9 +83,14 @@ class Controller extends BaseController
             $message = $err;
         }
 
-        if ($redirect === null)
+        if ($err instanceof ValidationException) {
+            throw $err; // throw validation errors to laravel framework
+        }
+        else if ($redirect === null) {
             return redirect()->back()->with('error', $message)->withInput();
-        else
+        }
+        else {
             return redirect($redirect)->with('error', $message)->withInput();
+        }
     }
 }
