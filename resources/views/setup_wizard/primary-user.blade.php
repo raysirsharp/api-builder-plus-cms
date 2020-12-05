@@ -56,7 +56,7 @@
             </div>
         </div>
         <button type="submit" class="btn btn-primary">
-            <i class="fas fa-check"></i> Let's Go!
+            <i class="fas fa-check"></i> Submit
         </button>
     </form>
 @endsection

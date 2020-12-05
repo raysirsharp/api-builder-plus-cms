@@ -63,6 +63,8 @@ class SetupWizardService extends BaseService
                 return 'start';
             case $this->base_step + 1:
                 return 'primary-user';
+            case $this->base_step + 2:
+                return 'public-users';
             default:
                 abort(404);
         }
@@ -110,21 +112,39 @@ class SetupWizardService extends BaseService
     public function submitConfigurationStep(Request $request, $step_number) {
         switch($step_number) {
             case $this->base_step:
-                return $this->databaseInitialize($request);
+                $this->databaseInitialize($request);
+                break;
             case $this->base_step + 1:
-                return $this->adminInitialize($request);
+                $this->adminInitialize($request);
+                $this->incrementStep();
+                break;
             default:
                 abort(404);
         }
     }
 
+    ///////////////////////
+    // PRIVATE FUNCTIONS //
+    ///////////////////////
+
     /**
+     * Increment the setup_progress for wizard
+     *
+     * @return void
+     */
+    private function incrementStep() {
+        $settings = GlobalSettings::first();
+        $settings->update(['setup_progress' => $settings->setup_progress + 1]);
+    }
+
+    /**
+     * SUBMIT STEP #1
      * Initialize the database for Development
      *
      * @param Request $request
      * @return void
      */
-    public function databaseInitialize(Request $request) {
+    private function databaseInitialize(Request $request) {
         // write database creds to ENV
         FileWriterService::envWrite('DB_DATABASE', $request->database_name);
         FileWriterService::envWrite('DB_USERNAME', $request->database_user_name);
@@ -135,7 +155,7 @@ class SetupWizardService extends BaseService
             Artisan::call('cache:clear');
             Artisan::call('migrate:fresh');
 
-            $settings = GlobalSettings::create(['setup_progress' => 2]);
+            GlobalSettings::create(['setup_progress' => 2]);
         }
         catch(Exception $e) {
             throw new Exception('We failed to connect to MYSQL, please check your credentials and make sure MYSQL is running and try again.');
@@ -144,12 +164,13 @@ class SetupWizardService extends BaseService
     }
 
     /**
+     * SUBMIT STEP #2
      * Initialize the primary for Development
      *
      * @param Request $request
      * @return void
      */
-    public function adminInitialize(Request $request) {
+    private function adminInitialize(Request $request) {
 
         //validate
         $request->validate(
