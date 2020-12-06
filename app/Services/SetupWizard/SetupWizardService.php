@@ -118,6 +118,10 @@ class SetupWizardService extends BaseService
                 $this->adminInitialize($request);
                 $this->incrementStep();
                 break;
+            case $this->base_step + 2:
+                $this->usersSettings($request);
+                $this->incrementStep();
+                break;
             default:
                 abort(404);
         }
@@ -145,6 +149,16 @@ class SetupWizardService extends BaseService
      * @return void
      */
     private function databaseInitialize(Request $request) {
+
+        //validate
+        $request->validate(
+            [
+                'database_name' => 'required|string',
+                'database_user_name' => 'required|string',
+                'database_password' => 'required|string'
+            ]
+        );
+
         // write database creds to ENV
         FileWriterService::envWrite('DB_DATABASE', $request->database_name);
         FileWriterService::envWrite('DB_USERNAME', $request->database_user_name);
@@ -165,7 +179,7 @@ class SetupWizardService extends BaseService
 
     /**
      * SUBMIT STEP #2
-     * Initialize the primary for Development
+     * Initialize the primary user for Development
      *
      * @param Request $request
      * @return void
@@ -193,5 +207,29 @@ class SetupWizardService extends BaseService
         ];
         User::create($user_data);
     }
+
+    /**
+     * SUBMIT STEP #3
+     * Set the user specific app settings
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function usersSettings(Request $request) {
+
+        //validate
+        $request->validate(
+            [
+                'user_name' => 'required|string|min:3|max:20',
+                'email' => 'required|email|max:255',
+                'password' => 'required|string|confirmed|min:6|max:20',
+            ]
+        );
+
+        throw new Exception('TODO');
+
+        // TODO
+    }
+
 
 }
