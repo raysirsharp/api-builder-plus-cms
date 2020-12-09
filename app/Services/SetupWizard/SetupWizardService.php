@@ -95,6 +95,13 @@ class SetupWizardService extends BaseService
                         'user_name' => $user->user_name,
                         'email' => $user->email
                     ];
+                case $this->base_step + 2:
+                    $settings = GlobalSettings::first();
+
+                    return [
+                        'has_data' => true,
+                        'settings' => $settings
+                    ];
                 default:
                     abort(404);
             }
@@ -220,15 +227,15 @@ class SetupWizardService extends BaseService
         //validate
         $request->validate(
             [
-                'user_name' => 'required|string|min:3|max:20',
-                'email' => 'required|email|max:255',
-                'password' => 'required|string|confirmed|min:6|max:20',
+                'has_users' => 'required|boolean',
+                'has_registration' => 'required|boolean',
+                'has_password_resets' => 'required|boolean',
+                'has_email_confirmation' => 'required|boolean'
             ]
         );
 
-        throw new Exception('TODO');
-
-        // TODO
+        $settings = GlobalSettings::first();
+        $settings->update($request->all());
     }
 
 

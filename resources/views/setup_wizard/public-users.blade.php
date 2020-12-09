@@ -26,27 +26,63 @@
         <div class="text-center">
             <h5>Does your app need public users?</h5>
             <div class="form-check form-check-inline">
-                <input onclick="showForm()" class="form-check-input" type="radio" name="has_users" id="has-users-checkbox" value="1">
+                <input
+                    @if ($data['settings']->has_users)
+                        checked
+                    @endif
+                    onclick="showForm()"
+                    class="form-check-input"
+                    type="radio"
+                    name="has_users"
+                    id="has-users-checkbox"
+                    value="1"
+                >
                 <label class="form-check-label">Yes</label>
             </div>
             <div class="form-check form-check-inline">
-                <input onclick="hideForm()" class="form-check-input" type="radio" name="has_users" id="has-users-checkbox" value="0">
+                <input
+                    @if (!$data['settings']->has_users)
+                        checked
+                    @endif
+                    onclick="hideForm()"
+                    class="form-check-input"
+                    type="radio"
+                    name="has_users"
+                    id="has-users-checkbox"
+                    value="0"
+                >
                 <label class="form-check-label">No</label>
             </div>
         </div>
 
-        <div id="config-inputs" class="text-center d-none">
+        <div id="config-inputs" class="text-center  @if (!$data['settings']->has_users) d-none @endif">
             <hr>
             <h5 class="mb-2">Public User Settings:</h5>
             {{-- Include Registration --}}
             <div class="py-3">
                 <h6 class="my-0">Allow users to register themselves?</h6>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="has_users" id="has-users-checkbox" value="1">
+                    <input
+                        @if ($data['settings']->has_registration)
+                            checked
+                        @endif
+                        class="form-check-input"
+                        type="radio"
+                        name="has_registration"
+                        value="1"
+                    >
                     <label class="form-check-label">Yes</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="has_users" id="has-users-checkbox" value="0">
+                    <input
+                        @if (!$data['settings']->has_registration)
+                            checked
+                        @endif
+                        class="form-check-input"
+                        type="radio"
+                        name="has_registration"
+                        value="0"
+                    >
                     <label class="form-check-label">No</label>
                 </div>
             </div>
@@ -54,11 +90,27 @@
             <div class="py-3">
                 <h6 class="my-0">Allow password resets?</h6>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="has_users" id="has-users-checkbox" value="1">
+                    <input
+                        @if ($data['settings']->has_password_resets)
+                            checked
+                        @endif
+                        class="form-check-input"
+                        type="radio"
+                        name="has_password_resets"
+                        value="1"
+                    >
                     <label class="form-check-label">Yes</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="has_users" id="has-users-checkbox" value="0">
+                    <input
+                        @if (!$data['settings']->has_password_resets)
+                            checked
+                        @endif
+                        class="form-check-input"
+                        type="radio"
+                        name="has_password_resets"
+                        value="0"
+                    >
                     <label class="form-check-label">No</label>
                 </div>
             </div>
@@ -66,15 +118,33 @@
             <div class="py-3">
                 <h6 class="my-0">Require email confirmations?</h6>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="has_users" id="has-users-checkbox" value="1">
+                    <input
+                        @if ($data['settings']->has_email_confirmation)
+                            checked
+                        @endif
+                        class="form-check-input"
+                        type="radio"
+                        name="has_email_confirmation"
+                        value="1"
+                    >
                     <label class="form-check-label">Yes</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="has_users" id="has-users-checkbox" value="0">
+                    <input
+                        @if (!$data['settings']->has_email_confirmation)
+                            checked
+                        @endif
+                        class="form-check-input"
+                        type="radio"
+                        name="has_email_confirmation"
+                        value="0"
+                    >
                     <label class="form-check-label">No</label>
                 </div>
             </div>
+        </div>
 
+        <div class="@if($data['settings']->setup_progress < 4) d-none @endif text-center" id="button-wrapper">
             <button type="submit" class="btn mt-4 btn-primary">
                 <i class="fas fa-check"></i> Submit
             </button>
@@ -87,9 +157,11 @@
     <script>
         function showForm() {
             $('#config-inputs').removeClass('d-none');
+            $('#button-wrapper').removeClass('d-none');
         }
         function hideForm() {
             $('#config-inputs').addClass('d-none');
+            $('#button-wrapper').removeClass('d-none');
         }
     </script>
 @endpush
